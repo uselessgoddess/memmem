@@ -9,6 +9,10 @@ edition = "2021"
 criterion = "0.5"
 memchr = "2.5.0"
 
+[profile.bench]
+codegen-units = 1
+lto = "thin"
+
 [[bench]]
 name = "bench"
 harness = false

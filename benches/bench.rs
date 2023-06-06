@@ -84,9 +84,12 @@ fn all_input(
         .warm_up_time(Duration::from_millis(500))
         .measurement_time(Duration::from_secs(2));
 
-    use memmem::naive;
+    use memmem::*;
 
-    define(&mut group, ("naive", corpus), query, naive::memmem);
+    define(&mut group, ("naive", corpus), query, naive::find);
+    define(&mut group, ("kmp", corpus), query, kmp::find);
+    // paste new gpt impls here
+
     define(&mut group, ("memchr", corpus), query, memchr::memmem::find);
 }
 
