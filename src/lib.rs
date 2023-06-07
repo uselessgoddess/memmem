@@ -165,6 +165,48 @@ pub mod bm {
     }
 }
 
+pub mod bm_optimized {
+    fn make_bad_char_shift(needle: &[u8]) -> Vec<usize> {
+        const ASCII_LEN: usize = 256;
+        let mut bad_char_shift = vec![needle.len(); ASCII_LEN];
+
+        for (i, &byte) in needle.iter().enumerate().take(needle.len() - 1) {
+            bad_char_shift[byte as usize] = needle.len() - 1 - i;
+        }
+
+        bad_char_shift
+    }
+
+    pub fn find(haystack: &[u8], needle: &[u8]) -> Option<usize> {
+        let needle_len = needle.len();
+        let haystack_len = haystack.len();
+
+        if needle_len == 0 {
+            return Some(0);
+        }
+
+        if needle_len > haystack_len {
+            return None;
+        }
+
+        let bad_char_shift = make_bad_char_shift(needle);
+        let mut h = 0;
+
+        while h + needle_len <= haystack_len {
+            for n in (0..needle_len).rev() {
+                if haystack[h + n] != needle[n] {
+                    h += bad_char_shift[haystack[h + needle_len - 1] as usize];
+                    break;
+                } else if n == 0 {
+                    return Some(h);
+                }
+            }
+        }
+
+        None
+    }
+}
+
 #[test]
 fn foo() {
     let haystack = "Привет, я ищу подстроку в этой строке!";

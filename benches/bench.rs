@@ -90,12 +90,12 @@ fn all_input(
     define(&mut group, ("kmp", corpus), query, kmp::find);
     define(&mut group, ("kmp-optimized", corpus), query, kmp_optimized::find);
 
-    
     if corpus.len() < data::RUST_LIBRARY.len() {
         define(&mut group, ("bm", corpus), query, bm::find);
     } else {
         println!("skip `bm` as so large input");
     }
+    define(&mut group, ("bm-optimized", corpus), query, bm_optimized::find);
     // paste new gpt impls here
 
     define(&mut group, ("memchr", corpus), query, memchr::memmem::find);
