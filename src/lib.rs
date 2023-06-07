@@ -1,5 +1,3 @@
-use std::cmp;
-
 pub mod naive {
     pub fn find(haystack: &[u8], needle: &[u8]) -> Option<usize> {
         if !needle.is_empty() {
@@ -62,5 +60,63 @@ pub mod kmp {
         }
 
         None
+    }
+}
+
+pub mod bm {
+    fn calculate_jump_table(pattern: &[u8]) -> Vec<usize> {
+        let pattern_length = pattern.len();
+
+        let mut jump_table = vec![pattern_length; 256];
+
+        for (i, &ch) in pattern.iter().enumerate() {
+            jump_table[ch as usize] = pattern_length - 1 - i;
+        }
+
+        jump_table
+    }
+
+    pub fn find(haystack: &[u8], needle: &[u8]) -> Option<usize> {
+        // Prepare
+        let needle_length = needle.len();
+        let haystack_length = haystack.len();
+
+        if needle_length == 0 {
+            return Some(0);
+        }
+
+        if needle_length > haystack_length {
+            return None;
+        }
+
+        // Precompute jump table
+        let jump_table = calculate_jump_table(needle);
+
+        // Main loop
+        let mut i = 0usize;
+        while i < haystack_length - needle_length + 1 {
+            let chunk = &haystack[i..i + needle_length];
+
+            if chunk == needle {
+                return Some(i);
+            }
+
+            let &mismatch_char = chunk.last().unwrap();
+            let jump_distance = jump_table[mismatch_char as usize];
+            i += jump_distance;
+        }
+
+        None
+    }
+}
+
+#[test]
+fn foo() {
+    let haystack = "Привет, я ищу подстроку в этой строке!";
+    let needle = "подстроку";
+
+    match bm::find(haystack.as_bytes(), needle.as_bytes()) {
+        Some(index) => println!("Подстрока \"{}\" найдена на позиции {}", needle, index),
+        None => println!("Подстрока \"{}\" не найдена в строке", needle),
     }
 }

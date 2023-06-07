@@ -1,10 +1,10 @@
-use criterion::measurement::Measurement;
-use criterion::{
-    criterion_group, criterion_main, BenchmarkGroup, Criterion, PlottingBackend, Throughput,
+use {
+    criterion::{
+        criterion_group, criterion_main, measurement::Measurement, BenchmarkGroup, Criterion,
+        PlottingBackend, Throughput,
+    },
+    std::{cmp, time::Duration},
 };
-use std::cmp;
-use std::fmt::format;
-use std::time::Duration;
 
 mod data {
     pub const RUST_LIBRARY: &str = include_str!("data/rust-library.rs");
@@ -88,6 +88,12 @@ fn all_input(
 
     define(&mut group, ("naive", corpus), query, naive::find);
     define(&mut group, ("kmp", corpus), query, kmp::find);
+
+    if corpus.len() < data::RUST_LIBRARY.len() {
+        define(&mut group, ("bm", corpus), query, bm::find);
+    } else {
+        println!("skip `bm` as so large input");
+    }
     // paste new gpt impls here
 
     define(&mut group, ("memchr", corpus), query, memchr::memmem::find);
@@ -107,7 +113,7 @@ fn all(c: &mut Criterion) {
     }
 }
 
-pub const INPUTS: &'static [Input] = &[
+pub const INPUTS: &[Input] = &[
     Input {
         name: "code-rust-library",
         corpus: data::RUST_LIBRARY,
