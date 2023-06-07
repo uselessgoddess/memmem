@@ -88,7 +88,9 @@ fn all_input(
 
     define(&mut group, ("naive", corpus), query, naive::find);
     define(&mut group, ("kmp", corpus), query, kmp::find);
+    define(&mut group, ("kmp-optimized", corpus), query, kmp_optimized::find);
 
+    
     if corpus.len() < data::RUST_LIBRARY.len() {
         define(&mut group, ("bm", corpus), query, bm::find);
     } else {
